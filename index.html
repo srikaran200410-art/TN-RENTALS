@@ -1,0 +1,1808 @@
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tamil Nadu Rentals | தமிழ்நாடு வாடகை & லீஸ் தீர்வுகள்</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Outfit:wght@300;400;500;600;700&family=Noto+Sans+Tamil:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- PapaParse for Google Sheet CSV -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <!-- Pannellum 360 Viewer CSS & JS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pannellum/2.5.6/pannellum.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pannellum/2.5.6/pannellum.js"></script>
+    <style>
+        :root {
+            --primary: #0a1128;
+            --brand: #1c3d5a;
+            --accent: #c5a059;
+            --accent-light: #dfba73;
+            --whatsapp: #25d366;
+            --whatsapp-dark: #1eb857;
+            --bg-light: #f8fafc;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --card-border: #e2e8f0;
+            --lease-color: #6366f1;
+            --yes-green: #15803d;
+            --no-red: #b91c1c;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', 'Noto Sans Tamil', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+            padding-bottom: 70px;
+        }
+
+        .topbar {
+            background: #060b18;
+            color: #94a3b8;
+            padding: 8px 4%;
+            font-size: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(197, 160, 89, 0.2);
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        .topbar span { color: var(--accent); font-weight: 600; }
+
+        nav {
+            background: #ffffff;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            padding: 10px 4%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            gap: 8px;
+        }
+
+        .brand-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            min-width: 0;
+            flex-shrink: 1;
+        }
+
+        .brand-logo-icon {
+            width: 34px;
+            height: 34px;
+            min-width: 34px;
+            background: linear-gradient(135deg, #0a1128, #1c3d5a);
+            border: 1.5px solid var(--accent);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .brand-logo-icon svg {
+            width: 18px;
+            height: 18px;
+            fill: var(--accent);
+        }
+
+        .brand-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.1;
+            overflow: hidden;
+        }
+
+        .brand-name {
+            font-family: 'Cinzel', serif;
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: var(--primary);
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .brand-name span { color: var(--accent); }
+
+        .brand-sub {
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .btn-upload {
+            background: var(--primary);
+            color: #fff;
+            padding: 7px 11px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.78rem;
+            cursor: pointer;
+            border: 1px solid rgba(197, 160, 89, 0.4);
+            white-space: nowrap;
+        }
+
+        .lang-switch-btn {
+            background: #f8fafc;
+            border: 1px solid var(--card-border);
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+            color: var(--primary);
+            white-space: nowrap;
+        }
+
+        .hero {
+            background: linear-gradient(180deg, rgba(10, 17, 40, 0.88) 0%, rgba(10, 17, 40, 0.94) 100%), 
+                        url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80') center/cover no-repeat;
+            color: #fff;
+            padding: 40px 16px 45px;
+            text-align: center;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(197, 160, 89, 0.15);
+            border: 1px solid var(--accent);
+            color: var(--accent-light);
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .hero h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            line-height: 1.35;
+            margin-bottom: 8px;
+            font-weight: 700;
+            color: #ffffff;
+        }
+
+        .hero p {
+            color: #cbd5e1;
+            font-size: 0.88rem;
+            max-width: 580px;
+            margin: 0 auto;
+        }
+
+        .owner-banner {
+            background: linear-gradient(90deg, #1e293b, #0f172a);
+            border-bottom: 1px solid rgba(197, 160, 89, 0.3);
+            color: #fff;
+            padding: 10px 16px;
+            text-align: center;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .owner-banner span { color: var(--accent-light); font-weight: 700; }
+        .owner-banner button {
+            background: var(--accent);
+            color: #060b18;
+            border: none;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        /* Search Section */
+        .search-container {
+            max-width: 950px;
+            background: #fff;
+            padding: 16px;
+            border-radius: 12px;
+            margin: 15px auto 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            border: 1px solid var(--card-border);
+            width: 92%;
+        }
+
+        .search-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .district-select {
+            flex: 1.2;
+            min-width: 170px;
+            padding: 10px 12px;
+            border: 1.5px solid var(--card-border);
+            border-radius: 8px;
+            font-size: 0.88rem;
+            outline: none;
+            background-color: #f8fafc;
+            color: var(--text-dark);
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .district-select:focus { border-color: var(--accent); }
+
+        .search-input-box {
+            flex: 2;
+            min-width: 180px;
+            padding: 10px 14px;
+            border: 1.5px solid var(--card-border);
+            border-radius: 8px;
+            font-size: 0.88rem;
+            outline: none;
+        }
+        .search-input-box:focus { border-color: var(--accent); }
+
+        .btn-search-trigger {
+            background: var(--primary);
+            color: #fff;
+            border: 1px solid var(--accent);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+        .btn-search-trigger:hover {
+            background: var(--brand);
+        }
+
+        .filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .btn-filter {
+            padding: 6px 11px;
+            border: 1px solid var(--card-border);
+            background: #f8fafc;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            cursor: pointer;
+        }
+
+        .btn-filter.active, .btn-filter:hover {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 16px 20px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .section-header h2 { 
+            font-family: 'Cinzel', serif;
+            font-size: 1.25rem; 
+            font-weight: 700; 
+            color: var(--primary);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .card-img-wrapper {
+            position: relative;
+            height: 190px;
+            width: 100%;
+            background: #e2e8f0;
+            cursor: pointer;
+        }
+
+        .card-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .tag-deal {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: #fff;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .tag-rent { background: var(--brand); }
+        .tag-lease { background: var(--lease-color); }
+
+        /* LIVE & VACANT STATUS BADGE WITH PULSING DOT */
+        .live-status-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 0.68rem;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+        }
+
+        .status-available {
+            background: rgba(22, 101, 52, 0.9);
+            color: #ffffff;
+            border: 1px solid #4ade80;
+        }
+
+        .status-occupied {
+            background: rgba(153, 27, 27, 0.9);
+            color: #ffffff;
+            border: 1px solid #f87171;
+        }
+
+        .pulse-dot {
+            width: 7px;
+            height: 7px;
+            background-color: #22c55e;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+            animation: pulse-green 1.5s infinite;
+        }
+
+        .pulse-dot-red {
+            width: 7px;
+            height: 7px;
+            background-color: #ef4444;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        @keyframes pulse-green {
+            0% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7);
+            }
+            70% {
+                transform: scale(1);
+                box-shadow: 0 0 0 6px rgba(74, 222, 128, 0);
+            }
+            100% {
+                transform: scale(0.95);
+                box-shadow: 0 0 0 0 rgba(74, 222, 128, 0);
+            }
+        }
+
+        .badge-pics {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(10, 17, 40, 0.85);
+            color: #fff;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .badge-id {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(10, 17, 40, 0.9);
+            color: var(--accent-light);
+            border: 1px solid var(--accent);
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        .card-body {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 6px;
+            cursor: pointer;
+        }
+
+        .price {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .deposit {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .card-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: var(--text-dark);
+            cursor: pointer;
+        }
+
+        .location {
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+
+        .card-summary-pills {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+        .pill-badge {
+            background: #f1f5f9;
+            border: 1px solid var(--card-border);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--brand);
+        }
+
+        .action-row {
+            display: flex;
+            gap: 6px;
+            margin-top: auto;
+        }
+
+        .view-btn {
+            flex: 1;
+            background: #f8fafc;
+            color: var(--text-dark);
+            text-align: center;
+            padding: 9px 4px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.76rem;
+            border: 1px solid var(--card-border);
+            cursor: pointer;
+        }
+
+        .btn-call-card {
+            flex: 1;
+            background: #0a1128;
+            color: #ffffff;
+            text-align: center;
+            padding: 9px 4px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.76rem;
+            border: 1px solid var(--accent);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .whatsapp-btn {
+            flex: 1.2;
+            background: var(--whatsapp);
+            color: #fff;
+            text-align: center;
+            padding: 9px 4px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.76rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+        }
+        .whatsapp-btn:hover { background: var(--whatsapp-dark); }
+
+        .wa-icon {
+            width: 15px;
+            height: 15px;
+            fill: #ffffff;
+            display: inline-block;
+            vertical-align: middle;
+            flex-shrink: 0;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 17, 40, 0.85);
+            backdrop-filter: blur(4px);
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+        }
+
+        .modal-content {
+            background: #fff;
+            border-radius: 12px;
+            max-width: 640px;
+            width: 100%;
+            max-height: 92vh;
+            overflow-y: auto;
+            padding: 20px;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 14px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #64748b;
+            z-index: 10;
+        }
+
+        .modal-media-nav {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .media-tab-btn {
+            padding: 6px 12px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            border-radius: 6px;
+            border: 1px solid var(--card-border);
+            background: #f1f5f9;
+            color: var(--text-dark);
+            cursor: pointer;
+        }
+
+        .media-tab-btn.active {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+
+        .media-display-area {
+            width: 100%;
+            height: 260px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #000;
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        .gallery-main-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        #panorama360Viewer {
+            width: 100%;
+            height: 100%;
+            display: none;
+        }
+
+        #videoPlayerContainer {
+            width: 100%;
+            height: 100%;
+            display: none;
+            background: #000;
+        }
+
+        #videoPlayerContainer iframe, #videoPlayerContainer video {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .gallery-thumbs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 14px;
+            overflow-x: auto;
+        }
+
+        .gallery-thumbs img {
+            width: 60px;
+            height: 45px;
+            border-radius: 4px;
+            object-fit: cover;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .gallery-thumbs img.active-thumb {
+            border-color: var(--accent);
+        }
+
+        .modal-prop-title {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .modal-prop-price {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--accent);
+        }
+
+        .modal-specs-box {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 8px;
+            background: #f8fafc;
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 10px 12px;
+            margin: 12px 0;
+            font-size: 0.8rem;
+        }
+        .modal-specs-box div {
+            display: flex;
+            flex-direction: column;
+        }
+        .modal-specs-box span.lbl {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        .modal-specs-box strong.val {
+            color: var(--primary);
+            font-size: 0.86rem;
+        }
+
+        .amenities-yn-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 8px;
+            margin-bottom: 14px;
+        }
+
+        .yn-card {
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 8px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #ffffff;
+        }
+        .yn-card .title {
+            font-size: 0.78rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .yn-badge {
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 2px 7px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+        .yn-yes {
+            background: #dcfce7;
+            color: var(--yes-green);
+            border: 1px solid #86efac;
+        }
+        .yn-no {
+            background: #fee2e2;
+            color: var(--no-red);
+            border: 1px solid #fca5a5;
+        }
+
+        .modal-desc-box {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 16px;
+            font-size: 0.85rem;
+            color: #334155;
+        }
+
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 9px;
+            border: 1px solid var(--card-border);
+            border-radius: 6px;
+            font-size: 0.85rem;
+            outline: none;
+        }
+
+        .submit-upload-btn {
+            width: 100%;
+            background: var(--primary);
+            color: #fff;
+            padding: 11px;
+            border-radius: 6px;
+            font-weight: 700;
+            border: 1px solid var(--accent);
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .pricing-section {
+            background: #0f172a;
+            color: #fff;
+            padding: 30px 16px;
+            border-top: 1px solid rgba(197, 160, 89, 0.2);
+            text-align: center;
+        }
+        .pricing-grid {
+            max-width: 900px;
+            margin: 16px auto 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 15px;
+        }
+        .pricing-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(197, 160, 89, 0.3);
+            border-radius: 10px;
+            padding: 18px;
+            text-align: center;
+        }
+
+        .trust-section {
+            background: #ffffff;
+            border-top: 1px solid var(--card-border);
+            padding: 35px 20px 25px;
+        }
+        .trust-grid {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            text-align: center;
+        }
+        .trust-box {
+            padding: 16px;
+            border-radius: 8px;
+            background: #f8fafc;
+            border: 1px solid var(--card-border);
+        }
+
+        footer {
+            background: #060b18;
+            color: #cbd5e1;
+            padding: 40px 20px 75px;
+            border-top: 2px solid var(--accent);
+            font-size: 0.85rem;
+        }
+        .footer-grid {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            text-align: left;
+        }
+
+        .floating-action-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #ffffff;
+            border-top: 1px solid var(--card-border);
+            padding: 8px 12px;
+            display: flex;
+            gap: 8px;
+            z-index: 1500;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.08);
+        }
+
+        #loadingState {
+            text-align: center;
+            padding: 40px 10px;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="topbar">
+        <div data-i18n="topbar_left">பிரீமியம் வாடகை & லீஸ் தீர்வுகள் • 24/7 உதவி</div>
+        <div><span data-i18n="topbar_right">100% சரிபார்க்கப்பட்டவை</span></div>
+    </div>
+
+    <nav>
+        <a href="#" class="brand-container">
+            <div class="brand-logo-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3zm0 2.84L18 11v7h-2v-6H8v6H6v-7l6-5.16z"/>
+                </svg>
+            </div>
+            <div class="brand-text">
+                <div class="brand-name">TN <span>RENTALS</span></div>
+                <div class="brand-sub">Brokerage</div>
+            </div>
+        </a>
+
+        <div class="nav-actions">
+            <button class="btn-upload" onclick="openUploadModal()" data-i18n="btn_upload">+ பதிவேற்ற</button>
+            <button class="lang-switch-btn" onclick="toggleLanguage()">
+                🌐 <span id="langBtnText">EN</span>
+            </button>
+        </div>
+    </nav>
+
+    <div class="owner-banner">
+        <span data-i18n="owner_banner_tag">📢 வீட்டு உரிமையாளர்களா? (Property Owners)</span>
+        <span data-i18n="owner_banner_text">உங்கள் வீடு/கடையை விரைவாக வாடகைக்கு விட உடனே பதிவேற்றுங்கள்!</span>
+        <button onclick="openUploadModal()" data-i18n="owner_banner_btn">சொத்தை சேர்க்க</button>
+    </div>
+
+    <section class="hero">
+        <div class="hero-badge" data-i18n="hero_badge">VERIFIED PROPERTIES</div>
+        <h1 data-i18n="hero_title">வாடகை & ஒத்தி வீடுகள் மற்றும் கடைகள்</h1>
+        <p data-i18n="hero_desc">குறைந்த கமிஷன் கட்டணம், சரிபார்க்கப்பட்ட இடங்கள் மற்றும் முழு ஆதரவு.</p>
+    </section>
+
+    <!-- Search Section with 38 Tamil Nadu Districts -->
+    <div class="search-container">
+        <div class="search-row">
+            <select id="districtSelect" class="district-select" onchange="applyFilters()">
+                <option value="" data-i18n="opt_all_districts">📍 அனைத்து மாவட்டங்கள் (All Districts)</option>
+                <option value="madurai|மதுரை">மதுரை (Madurai)</option>
+                <option value="chennai|சென்னை">சென்னை (Chennai)</option>
+                <option value="coimbatore|கோயம்புத்தூர்|கோவை">கோயம்புத்தூர் (Coimbatore)</option>
+                <option value="tiruchirappalli|திருச்சிராப்பள்ளி|திருச்சி|trichy">திருச்சிராப்பள்ளி (Trichy)</option>
+                <option value="salem|சேலம்">சேலம் (Salem)</option>
+                <option value="tiruppur|திருப்பூர்">திருப்பூர் (Tiruppur)</option>
+                <option value="tirunelveli|திருநெல்வேலி|நெல்லை">திருநெல்வேலி (Tirunelveli)</option>
+                <option value="erode|ஈரோடு">ஈரோடு (Erode)</option>
+                <option value="vellore|வேலூர்">வேலூர் (Vellore)</option>
+                <option value="thanjavur|தஞ்சாவூர்|தஞ்சை">தஞ்சாவூர் (Thanjavur)</option>
+                <option value="dindigul|திண்டுக்கல்">திண்டுக்கல் (Dindigul)</option>
+                <option value="virudhunagar|விருதுநகர்">விருதுநகர் (Virudhunagar)</option>
+                <option value="thoothukudi|தூத்துக்குடி">தூத்துக்குடி (Thoothukudi)</option>
+                <option value="kanyakumari|கன்னியாகுமரி|நாகர்கோவில்">கன்னியாகுமரி (Kanyakumari)</option>
+                <option value="theni|தேனி">தேனி (Theni)</option>
+                <option value="sivaganga|சிவகங்கை">சிவகங்கை (Sivaganga)</option>
+                <option value="ramanathapuram|ராமநாதபுரம்">ராமநாதபுரம் (Ramanathapuram)</option>
+                <option value="tenkasi|தென்காசி">தென்காசி (Tenkasi)</option>
+                <option value="karur|கரூர்">கரூர் (Karur)</option>
+                <option value="namakkal|நாமக்கல்">நாமக்கல் (Namakkal)</option>
+                <option value="krishnagiri|கிருஷ்ணகிரி">கிருஷ்ணகிரி (Krishnagiri)</option>
+                <option value="dharmapuri|தர்மபுரி">தர்மபுரி (Dharmapuri)</option>
+                <option value="pudukkottai|புதுக்கோட்டை">புதுக்கோட்டை (Pudukkottai)</option>
+                <option value="ariyalur|அரியலூர்">அரியலூர் (Ariyalur)</option>
+                <option value="perambalur|பெரம்பலூர்">பெரம்பலூர் (Perambalur)</option>
+                <option value="nagapattinam|நாகப்பட்டினம்">நாகப்பட்டினம் (Nagapattinam)</option>
+                <option value="mayiladuthurai|மயிலாடுதுறை">மயிலாடுதுறை (Mayiladuthurai)</option>
+                <option value="tiruvarur|திருவாரூர்">திருவாரூர் (Tiruvarur)</option>
+                <option value="cuddalore|கடலூர்">கடலூர் (Cuddalore)</option>
+                <option value="villupuram|விழுப்புரம்">விழுப்புரம் (Villupuram)</option>
+                <option value="kallakurichi|கள்ளக்குறிச்சி">கள்ளக்குறிச்சி (Kallakurichi)</option>
+                <option value="tiruvannamalai|திருவண்ணாமலை">திருவண்ணாமலை (Tiruvannamalai)</option>
+                <option value="ranipet|ராணிப்பேட்டை">ராணிப்பேட்டை (Ranipet)</option>
+                <option value="tirupattur|திருப்பத்தூர்">திருப்பத்தூர் (Tirupattur)</option>
+                <option value="kanchipuram|காஞ்சிபுரம்">காஞ்சிபுரம் (Kanchipuram)</option>
+                <option value="chengalpattu|செங்கல்பட்டு">செங்கல்பட்டு (Chengalpattu)</option>
+                <option value="tiruvallur|திருவள்ளூர்">திருவள்ளூர் (Tiruvallur)</option>
+                <option value="nilgiris|நீலகிரி|ஊட்டி">நீலகிரி (Nilgiris)</option>
+            </select>
+
+            <input type="text" id="areaInput" class="search-input-box" placeholder="குறிப்பிட்ட ஏரியா (எ.கா: Anna Nagar, K.K. Nagar...)" onkeyup="if(event.key === 'Enter') applyFilters()">
+
+            <button class="btn-search-trigger" onclick="applyFilters()">
+                🔍 <span data-i18n="btn_search_txt">தேட</span>
+            </button>
+        </div>
+
+        <div class="filter-buttons">
+            <button class="btn-filter active" onclick="setCategoryFilter('all', this)" data-i18n="f_all">அனைத்தும்</button>
+            <button class="btn-filter" onclick="setCategoryFilter('rent', this)" data-i18n="f_rent">வாடகை வீடு</button>
+            <button class="btn-filter" onclick="setCategoryFilter('lease', this)" data-i18n="f_lease">லீஸ் வீடு</button>
+            <button class="btn-filter" onclick="setCategoryFilter('shop-rent', this)" data-i18n="f_shop_rent">வாடகை கடை</button>
+            <button class="btn-filter" onclick="setCategoryFilter('shop-lease', this)" data-i18n="f_shop_lease">லீஸ் கடை</button>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-container">
+        <div class="section-header">
+            <h2 data-i18n="listings_heading">கிடைக்கும் சொத்துக்கள்</h2>
+            <span id="propCount" style="color: var(--text-muted); font-size: 0.82rem;">ஏற்றப்படுகிறது...</span>
+        </div>
+
+        <div id="loadingState">🔄 கூகுள் ஷீட்டில் இருந்து விவரங்கள் ஏற்றப்படுகின்றன...</div>
+        <div class="grid" id="propertiesList" style="display: none;"></div>
+    </main>
+
+    <!-- Pricing Section -->
+    <section class="pricing-section">
+        <h3 style="font-family: 'Cinzel', serif; font-size: 1.15rem; color: var(--accent-light);" data-i18n="pricing_title">
+            நேர்மையான & வெளிப்படையான புரோக்கரேஜ் கட்டணங்கள்
+        </h3>
+        <p style="color: #94a3b8; font-size: 0.8rem; margin-top: 4px;" data-i18n="pricing_sub">
+            மறைமுகக் கட்டணங்கள் ஏதுமில்லை. ஒப்பந்தம் முடிந்த பின்னரே கட்டணம் செலுத்த வேண்டும்.
+        </p>
+        <div class="pricing-grid">
+            <div class="pricing-card">
+                <div style="font-size: 1.3rem; margin-bottom: 4px;">🏠</div>
+                <strong style="color: #fff; font-size: 0.95rem;" data-i18n="pricing_rent_title">வாடகை வீடுகள் & கடைகள் (Rent)</strong>
+                <div style="font-size: 1.35rem; font-weight: 800; color: var(--accent); margin: 6px 0;" data-i18n="pricing_rent_rate">வெறும் 9.99% புரோக்கரேஜ்</div>
+                <p style="font-size: 0.8rem; color: #cbd5e1; font-weight: 600;" data-i18n="pricing_rent_eg">உதா: ₹3,000 வாடகைக்கு 👉 வெறும் ₹299 கட்டணம் மட்டுமே!</p>
+                <p style="font-size: 0.72rem; color: #94a3b8; margin-top: 4px;" data-i18n="pricing_rent_sub">வீட்டின் சாவியைப் பெற்று குடியேறிய பிறகே செலுத்த வேண்டும்.</p>
+            </div>
+            <div class="pricing-card">
+                <div style="font-size: 1.3rem; margin-bottom: 4px;">📑</div>
+                <strong style="color: #fff; font-size: 0.95rem;" data-i18n="pricing_lease_title">ஒத்தி / லீஸ் (Lease) சொத்துக்கள்</strong>
+                <div style="font-size: 1.35rem; font-weight: 800; color: var(--accent); margin: 6px 0;" data-i18n="pricing_lease_rate">வெறும் 0.99% புரோக்கரேஜ்</div>
+                <p style="font-size: 0.8rem; color: #cbd5e1; font-weight: 600;" data-i18n="pricing_lease_eg">உதா: ₹1,00,000 லீஸுக்கு 👉 வெறும் ₹990 கட்டணம் மட்டுமே!</p>
+                <p style="font-size: 0.72rem; color: #94a3b8; margin-top: 4px;" data-i18n="pricing_lease_sub">லீஸ் ஒப்பந்த ஆவணங்கள் மற்றும் முழு வழிகாட்டலுடன்.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Why Choose Us -->
+    <section class="trust-section">
+        <div style="max-width: 1100px; margin: 0 auto; text-align: center;">
+            <h3 style="font-family: 'Cinzel', serif; color: var(--primary); font-size: 1.2rem; margin-bottom: 18px;" data-i18n="why_title">
+                ஏன் Tamil Nadu Rentals-ஐ தேர்ந்தெடுக்க வேண்டும்?
+            </h3>
+            <div class="trust-grid">
+                <div class="trust-box">
+                    <div style="font-size: 1.5rem; margin-bottom: 5px;">⏱️</div>
+                    <strong style="color: var(--primary); font-size: 0.92rem;" data-i18n="why_1_title">24/7 நேரடி உதவி</strong>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 3px;" data-i18n="why_1_desc">வாடகை & லீஸ் சார்ந்த வழிகாட்டல் மற்றும் வாடிக்கையாளர் ஆதரவு.</p>
+                </div>
+                <div class="trust-box">
+                    <div style="font-size: 1.5rem; margin-bottom: 5px;">🏢</div>
+                    <strong style="color: var(--primary); font-size: 0.92rem;" data-i18n="why_2_title">நேரில் சரிபார்க்கப்பட்டவை</strong>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 3px;" data-i18n="why_2_desc">அனைத்து வீடுகள் மற்றும் கடைகளும் நேரில் சென்று ஆய்வு செய்யப்பட்டவை.</p>
+                </div>
+                <div class="trust-box">
+                    <div style="font-size: 1.5rem; margin-bottom: 5px;">🤝</div>
+                    <strong style="color: var(--primary); font-size: 0.92rem;" data-i18n="why_3_title">நேர்மையான நடைமுறை</strong>
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 3px;" data-i18n="why_3_desc">உரிமையாளர் - வாடகைதாரர் இருவருக்கும் பாதுகாப்பான ஒப்பந்த வழிகாட்டல்.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Details Modal with Live Status & Media Tabs -->
+    <div id="detailsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeDetailsModal()">&times;</span>
+            
+            <div class="modal-media-nav">
+                <button class="media-tab-btn active" id="tabPhotosBtn" onclick="switchMediaTab('photos')">🖼️ <span data-i18n="tab_photos">படங்கள்</span></button>
+                <button class="media-tab-btn" id="tab360Btn" onclick="switchMediaTab('360')">🔄 <span data-i18n="tab_360">360° பார்வை</span></button>
+                <button class="media-tab-btn" id="tabVideoBtn" onclick="switchMediaTab('video')">🎬 <span data-i18n="tab_video">வீடியோ டூர்</span></button>
+            </div>
+
+            <div class="media-display-area">
+                <img id="detailMainImg" src="" alt="View" class="gallery-main-img">
+                <div id="panorama360Viewer"></div>
+                <div id="videoPlayerContainer"></div>
+            </div>
+
+            <div class="gallery-thumbs" id="detailThumbs"></div>
+
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
+                <div>
+                    <h3 class="modal-prop-title" id="detailTitle"></h3>
+                    <p class="location" id="detailLocation" style="margin-top: 2px;"></p>
+                    <div id="modalStatusBadge" style="margin-top: 4px;"></div>
+                </div>
+                <div class="modal-prop-price" id="detailPrice"></div>
+            </div>
+
+            <!-- Fully Translatable Specs Box -->
+            <div class="modal-specs-box">
+                <div>
+                    <span class="lbl" data-i18n="spec_lbl_bhk">படுக்கையறை (BHK)</span>
+                    <strong class="val" id="specBHK">-</strong>
+                </div>
+                <div>
+                    <span class="lbl" data-i18n="spec_lbl_sqft">பரப்பளவு (Size)</span>
+                    <strong class="val" id="specSqft">-</strong>
+                </div>
+                <div>
+                    <span class="lbl" data-i18n="spec_lbl_bath">குளியலறை (Bathroom)</span>
+                    <strong class="val" id="specBath">-</strong>
+                </div>
+                <div>
+                    <span class="lbl" data-i18n="spec_lbl_floor">தளம் (Floor)</span>
+                    <strong class="val" id="specFloor">-</strong>
+                </div>
+            </div>
+
+            <div class="amenities-yn-grid">
+                <div class="yn-card">
+                    <div class="title">🚗 <span data-i18n="yn_car">கார் பார்க்கிங்</span></div>
+                    <span class="yn-badge" id="badgeCar">YES</span>
+                </div>
+                <div class="yn-card">
+                    <div class="title">🏍️ <span data-i18n="yn_bike">பைக் பார்க்கிங்</span></div>
+                    <span class="yn-badge" id="badgeBike">YES</span>
+                </div>
+                <div class="yn-card">
+                    <div class="title">⚡ <span data-i18n="yn_ev">EV சார்ஜிங்</span></div>
+                    <span class="yn-badge" id="badgeEV">YES</span>
+                </div>
+                <div class="yn-card">
+                    <div class="title">🐾 <span data-i18n="yn_pets">செல்லப்பிராணிகள்</span></div>
+                    <span class="yn-badge" id="badgePets">NO</span>
+                </div>
+            </div>
+
+            <div class="modal-desc-box">
+                <h4 style="margin-bottom: 4px; font-weight: 700; color: var(--primary);" data-i18n="detail_h4">முழு விவரங்கள்:</h4>
+                <p id="detailFullText"></p>
+                <div class="features" id="detailFeatures" style="margin-top: 8px; margin-bottom: 0;"></div>
+            </div>
+
+            <div style="display: flex; gap: 8px;">
+                <a href="tel:+918610994817" class="btn-call-card" style="flex: 1; padding: 12px; font-size: 0.9rem;" data-i18n="btn_call">
+                    📞 அழைக்க
+                </a>
+                <button class="whatsapp-btn" style="flex: 1.2; padding: 12px; font-size: 0.9rem;" id="detailWhatsAppBtn">
+                    <svg class="wa-icon" viewBox="0 0 24 24"><path d="M12.031 2C6.511 2 2.016 6.477 2.016 11.976c0 1.761.46 3.483 1.332 5.003L2 22l5.176-1.338c1.466.797 3.123 1.218 4.855 1.218 5.52 0 10.016-4.477 10.016-9.976C22.047 6.477 17.551 2 12.031 2zm5.795 14.281c-.244.686-1.222 1.314-1.748 1.396-.48.074-.954.129-3.03-.686-2.525-.992-4.148-3.567-4.275-3.737-.123-.17-1.018-1.353-1.018-2.58 0-1.228.643-1.83.87-2.079.227-.249.5-.312.668-.312.167 0 .334.002.48.009.155.008.363-.059.567.433.213.513.727 1.77.79 1.9.064.129.108.281.022.451-.086.17-.129.278-.256.425-.128.148-.268.33-.383.444-.128.127-.26.265-.112.52.148.254.658 1.084 1.413 1.756.972.865 1.791 1.134 2.046 1.261.255.127.404.106.554-.064.15-.17.643-.746.814-1.002.17-.255.341-.213.576-.127.235.085 1.488.701 1.744.829.256.128.427.191.49.297.064.106.064.618-.18 1.304z"/></svg>
+                    WhatsApp
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload Modal -->
+    <div id="uploadModal" class="modal">
+        <div class="modal-content" style="max-width: 440px;">
+            <span class="close-btn" onclick="closeUploadModal()">&times;</span>
+            <h3 data-i18n="modal_title" style="font-size: 1.15rem; margin-bottom: 4px;">உங்கள் சொத்தை பதிவேற்றவும்</h3>
+            <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;" data-i18n="modal_sub">விவரங்களை உள்ளிடவும். வாட்ஸ்அப்பில் இருந்து அனுப்பப்படும்.</p>
+            
+            <form onsubmit="handleUploadSubmit(event)">
+                <div class="form-group">
+                    <label data-i18n="lbl_prop_type">சொத்தின் வகை</label>
+                    <select id="upPropType" required>
+                        <option value="House for Rent">வாடகை வீடு (House for Rent)</option>
+                        <option value="House for Lease">ஒத்தி/லீஸ் வீடு (House for Lease)</option>
+                        <option value="Shop for Rent">வாடகை கடை (Shop for Rent)</option>
+                        <option value="Shop for Lease">லீஸ் கடை (Shop for Lease)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label data-i18n="lbl_location">மாவட்டம் & ஏரியா</label>
+                    <input type="text" id="upLocation" placeholder="Madurai, Anna Nagar..." required>
+                </div>
+
+                <div class="form-group">
+                    <label data-i18n="lbl_amount">எதிர்பார்க்கும் தொகை</label>
+                    <input type="text" id="upAmount" placeholder="₹12,000..." required>
+                </div>
+
+                <div class="form-group">
+                    <label data-i18n="lbl_specs_entry">படுக்கையறை, குளியலறை & பார்க்கிங் விவரம்</label>
+                    <input type="text" id="upSpecs" placeholder="2 BHK, Western Bath, Car/Bike Parking Yes, EV Socket Yes...">
+                </div>
+
+                <div class="form-group">
+                    <label data-i18n="lbl_details">கூடுதல் வசதிகள் & வீடியோ லிங்க்</label>
+                    <textarea id="upDetails" rows="2" placeholder="24/7 Water, Lift, YouTube video link..."></textarea>
+                </div>
+
+                <button type="submit" class="submit-upload-btn">
+                    <svg class="wa-icon" viewBox="0 0 24 24"><path d="M12.031 2C6.511 2 2.016 6.477 2.016 11.976c0 1.761.46 3.483 1.332 5.003L2 22l5.176-1.338c1.466.797 3.123 1.218 4.855 1.218 5.52 0 10.016-4.477 10.016-9.976C22.047 6.477 17.551 2 12.031 2zm5.795 14.281c-.244.686-1.222 1.314-1.748 1.396-.48.074-.954.129-3.03-.686-2.525-.992-4.148-3.567-4.275-3.737-.123-.17-1.018-1.353-1.018-2.58 0-1.228.643-1.83.87-2.079.227-.249.5-.312.668-.312.167 0 .334.002.48.009.155.008.363-.059.567.433.213.513.727 1.77.79 1.9.064.129.108.281.022.451-.086.17-.129.278-.256.425-.128.148-.268.33-.383.444-.128.127-.26.265-.112.52.148.254.658 1.084 1.413 1.756.972.865 1.791 1.134 2.046 1.261.255.127.404.106.554-.064.15-.17.643-.746.814-1.002.17-.255.341-.213.576-.127.235.085 1.488.701 1.744.829.256.128.427.191.49.297.064.106.064.618-.18 1.304z"/></svg>
+                    <span data-i18n="btn_submit_up">வாட்ஸ்அப்பில் சமர்ப்பிக்க</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Rich Footer -->
+    <footer>
+        <div class="footer-grid">
+            <div>
+                <div style="font-family: 'Cinzel', serif; font-size: 1.15rem; font-weight: 800; color: #fff; margin-bottom: 8px;">
+                    TAMIL NADU <span style="color: var(--accent);">RENTALS</span>
+                </div>
+                <p style="color: #94a3b8; font-size: 0.82rem; line-height: 1.6;" data-i18n="footer_brand_desc">
+                    தமிழ்நாடு முழுவதும் வீடுகள், குடியிருப்புகள் மற்றும் வணிக வளாகங்களை வாடகை மற்றும் லீஸுக்கு எடுப்பதற்கான அதிகாரப்பூர்வ ரியல் எஸ்டேட் தளம்.
+                </p>
+                <div style="margin-top: 10px; display: inline-block; background: rgba(197, 160, 89, 0.15); border: 1px solid var(--accent); color: var(--accent-light); padding: 3px 8px; border-radius: 4px; font-size: 0.72rem; font-weight: 700;" data-i18n="footer_badge">
+                    🟢 24/7 வாடிக்கையாளர் ஆதரவு
+                </div>
+            </div>
+
+            <div>
+                <div style="font-weight: 700; color: #fff; font-size: 0.9rem; margin-bottom: 8px; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 4px;" data-i18n="footer_head_office">
+                    📍 தலைமை அலுவலகம் (Head Office)
+                </div>
+                <p style="color: #cbd5e1; line-height: 1.6; font-size: 0.83rem;">
+                    <strong>Tamil Nadu Rentals Inc.</strong><br>
+                    <strong>Madurai - 625 020</strong><br>
+                    <span data-i18n="footer_country">தமிழ்நாடு, இந்தியா.</span>
+                </p>
+            </div>
+
+            <div>
+                <div style="font-weight: 700; color: #fff; font-size: 0.9rem; margin-bottom: 8px; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 4px;" data-i18n="footer_support_title">
+                    📞 வாடிக்கையாளர் சேவை (24/7)
+                </div>
+                <p style="color: #cbd5e1; margin-bottom: 6px; font-size: 0.83rem;">
+                    <span data-i18n="footer_call_text">நேரடி தொலைபேசி உதவி:</span> <br>
+                    <a href="tel:+918610994817" style="color: #38bdf8; text-decoration: none; font-weight: 700; font-size: 1rem;">
+                        +91 8610994817
+                    </a>
+                </p>
+                <p style="color: #cbd5e1; font-size: 0.83rem;">
+                    <span data-i18n="footer_wa_text">வாட்ஸ்அப் உதவி:</span> <br>
+                    <a href="https://wa.me/918610994817" target="_blank" style="color: #25d366; text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
+                        <svg class="wa-icon" viewBox="0 0 24 24" style="fill: #25d366;"><path d="M12.031 2C6.511 2 2.016 6.477 2.016 11.976c0 1.761.46 3.483 1.332 5.003L2 22l5.176-1.338c1.466.797 3.123 1.218 4.855 1.218 5.52 0 10.016-4.477 10.016-9.976C22.047 6.477 17.551 2 12.031 2zm5.795 14.281c-.244.686-1.222 1.314-1.748 1.396-.48.074-.954.129-3.03-.686-2.525-.992-4.148-3.567-4.275-3.737-.123-.17-1.018-1.353-1.018-2.58 0-1.228.643-1.83.87-2.079.227-.249.5-.312.668-.312.167 0 .334.002.48.009.155.008.363-.059.567.433.213.513.727 1.77.79 1.9.064.129.108.281.022.451-.086.17-.129.278-.256.425-.128.148-.268.33-.383.444-.128.127-.26.265-.112.52.148.254.658 1.084 1.413 1.756.972.865 1.791 1.134 2.046 1.261.255.127.404.106.554-.064.15-.17.643-.746.814-1.002.17-.255.341-.213.576-.127.235.085 1.488.701 1.744.829.256.128.427.191.49.297.064.106.064.618-.18 1.304z"/></svg>
+                        Chat on WhatsApp (+91 8610994817)
+                    </a>
+                </p>
+            </div>
+        </div>
+
+        <div style="max-width: 1100px; margin: 25px auto 0; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.08); text-align: center; color: #64748b; font-size: 0.75rem;">
+            &copy; 2026 Tamil Nadu Rentals. <span data-i18n="footer_rights">அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை.</span> | Head Office: Madurai - 625 020.
+        </div>
+    </footer>
+
+    <!-- Bottom Floating Bar -->
+    <div class="floating-action-bar">
+        <a href="tel:+918610994817" style="flex: 1; background: var(--primary); color: #fff; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px; border-radius: 6px; font-weight: 700; font-size: 0.82rem; border: 1px solid var(--accent);" data-i18n="float_call">
+            📞 24/7 அழைக்க
+        </a>
+        <a href="https://wa.me/918610994817?text=Hello%20Tamil%20Nadu%20Rentals,%20I%20need%20property%20assistance." target="_blank" style="flex: 1.3; background: var(--whatsapp); color: #fff; text-decoration: none; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 10px; border-radius: 6px; font-weight: 700; font-size: 0.82rem;">
+            <svg class="wa-icon" viewBox="0 0 24 24"><path d="M12.031 2C6.511 2 2.016 6.477 2.016 11.976c0 1.761.46 3.483 1.332 5.003L2 22l5.176-1.338c1.466.797 3.123 1.218 4.855 1.218 5.52 0 10.016-4.477 10.016-9.976C22.047 6.477 17.551 2 12.031 2zm5.795 14.281c-.244.686-1.222 1.314-1.748 1.396-.48.074-.954.129-3.03-.686-2.525-.992-4.148-3.567-4.275-3.737-.123-.17-1.018-1.353-1.018-2.58 0-1.228.643-1.83.87-2.079.227-.249.5-.312.668-.312.167 0 .334.002.48.009.155.008.363-.059.567.433.213.513.727 1.77.79 1.9.064.129.108.281.022.451-.086.17-.129.278-.256.425-.128.148-.268.33-.383.444-.128.127-.26.265-.112.52.148.254.658 1.084 1.413 1.756.972.865 1.791 1.134 2.046 1.261.255.127.404.106.554-.064.15-.17.643-.746.814-1.002.17-.255.341-.213.576-.127.235.085 1.488.701 1.744.829.256.128.427.191.49.297.064.106.064.618-.18 1.304z"/></svg>
+            <span data-i18n="float_wa">WhatsApp 24/7</span>
+        </a>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        const MY_PHONE_NUMBER = "8610994817";
+        const MY_WHATSAPP_NUMBER = "918610994817";
+        const GOOGLE_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1X2Og4-ZDosVVGj50VQoOXcrFjR4k-8a7zh6y-Pgec9w/export?format=csv";
+
+        const WA_SVG_ICON = `<svg class="wa-icon" viewBox="0 0 24 24"><path d="M12.031 2C6.511 2 2.016 6.477 2.016 11.976c0 1.761.46 3.483 1.332 5.003L2 22l5.176-1.338c1.466.797 3.123 1.218 4.855 1.218 5.52 0 10.016-4.477 10.016-9.976C22.047 6.477 17.551 2 12.031 2zm5.795 14.281c-.244.686-1.222 1.314-1.748 1.396-.48.074-.954.129-3.03-.686-2.525-.992-4.148-3.567-4.275-3.737-.123-.17-1.018-1.353-1.018-2.58 0-1.228.643-1.83.87-2.079.227-.249.5-.312.668-.312.167 0 .334.002.48.009.155.008.363-.059.567.433.213.513.727 1.77.79 1.9.064.129.108.281.022.451-.086.17-.129.278-.256.425-.128.148-.268.33-.383.444-.128.127-.26.265-.112.52.148.254.658 1.084 1.413 1.756.972.865 1.791 1.134 2.046 1.261.255.127.404.106.554-.064.15-.17.643-.746.814-1.002.17-.255.341-.213.576-.127.235.085 1.488.701 1.744.829.256.128.427.191.49.297.064.106.064.618-.18 1.304z"/></svg>`;
+
+        let currentLang = 'ta';
+        let propertiesData = [];
+        let currentCategory = 'all';
+        let activeProperty = null;
+        let pannellumViewerInstance = null;
+
+        const translations = {
+            ta: {
+                topbar_left: "பிரீமியம் வாடகை & லீஸ் தீர்வுகள் • 24/7 உதவி",
+                topbar_right: "100% சரிபார்க்கப்பட்டவை",
+                btn_upload: "+ பதிவேற்ற",
+                owner_banner_tag: "📢 வீட்டு உரிமையாளர்களா? (Property Owners)",
+                owner_banner_text: "உங்கள் வீடு/கடையை விரைவாக வாடகைக்கு விட உடனே பதிவேற்றுங்கள்!",
+                owner_banner_btn: "சொத்தை சேர்க்க",
+                hero_badge: "VERIFIED PROPERTIES",
+                hero_title: "வாடகை & ஒத்தி வீடுகள் மற்றும் கடைகள்",
+                hero_desc: "குறைந்த கமிஷன் கட்டணம், சரிபார்க்கப்பட்ட இடங்கள் மற்றும் முழு ஆதரவு.",
+                opt_all_districts: "📍 அனைத்து மாவட்டங்கள் (All Districts)",
+                area_placeholder: "குறிப்பிட்ட ஏரியா (எ.கா: Anna Nagar, K.K. Nagar...)",
+                btn_search_txt: "தேட",
+                f_all: "அனைத்தும்",
+                f_rent: "வாடகை வீடு",
+                f_lease: "லீஸ் வீடு",
+                f_shop_rent: "வாடகை கடை",
+                f_shop_lease: "லீஸ் கடை",
+                listings_heading: "கிடைக்கும் சொத்துக்கள்",
+                tag_rent: "வாடகை",
+                tag_lease: "லீஸ்",
+                whatsapp_cta: "WhatsApp",
+                view_details: "விவரம்",
+                btn_call: "📞 அழைக்க",
+                float_call: "📞 24/7 அழைக்க",
+                float_wa: "WhatsApp 24/7",
+                photos_count: "📸 5 படங்கள்",
+                tab_photos: "படங்கள்",
+                tab_360: "360° பார்வை",
+                tab_video: "வீடியோ டூர்",
+                spec_lbl_bhk: "படுக்கையறை (BHK)",
+                spec_lbl_sqft: "பரப்பளவு (Size)",
+                spec_lbl_bath: "குளியலறை (Bathroom)",
+                spec_lbl_floor: "தளம் (Floor)",
+                detail_h4: "முழு விவரங்கள்:",
+                status_live: "நேரலை / காலியாக உள்ளது",
+                status_occupied: "வாடகைக்கு விடப்பட்டது",
+                modal_title: "உங்கள் சொத்தை பதிவேற்றவும்",
+                modal_sub: "விவரங்களை உள்ளிடவும். வாட்ஸ்அப்பில் இருந்து அனுப்பப்படும்.",
+                lbl_prop_type: "சொத்தின் வகை",
+                lbl_location: "மாவட்டம் & ஏரியா",
+                lbl_amount: "எதிர்பார்க்கும் தொகை",
+                lbl_specs_entry: "படுக்கையறை, குளியலறை & பார்க்கிங் விவரம்",
+                lbl_details: "கூடுதல் வசதிகள் & வீடியோ லிங்க்",
+                btn_submit_up: "வாட்ஸ்அப்பில் சமர்ப்பிக்க",
+                pricing_title: "நேர்மையான & வெளிப்படையான புரோக்கரேஜ் கட்டணங்கள்",
+                pricing_sub: "மறைமுகக் கட்டணங்கள் ஏதுமில்லை. ஒப்பந்தம் முடிந்த பின்னரே கட்டணம் செலுத்த வேண்டும்.",
+                pricing_rent_title: "வாடகை வீடுகள் & கடைகள் (Rent)",
+                pricing_rent_rate: "வெறும் 9.99% புரோக்கரேஜ்",
+                pricing_rent_eg: "உதா: ₹3,000 வாடகைக்கு 👉 வெறும் ₹299 கட்டணம் மட்டுமே!",
+                pricing_rent_sub: "வீட்டின் சாவியைப் பெற்று குடியேறிய பிறகே செலுத்த வேண்டும்.",
+                pricing_lease_title: "ஒத்தி / லீஸ் (Lease) சொத்துக்கள்",
+                pricing_lease_rate: "வெறும் 0.99% புரோக்கரேஜ்",
+                pricing_lease_eg: "உதா: ₹1,00,000 லீஸுக்கு 👉 வெறும் ₹990 கட்டணம் மட்டுமே!",
+                pricing_lease_sub: "லீஸ் ஒப்பந்த ஆவணங்கள் மற்றும் முழு வழிகாட்டலுடன்.",
+                why_title: "ஏன் Tamil Nadu Rentals-ஐ தேர்ந்தெடுக்க வேண்டும்?",
+                why_1_title: "24/7 நேரடி உதவி",
+                why_1_desc: "வாடகை & லீஸ் சார்ந்த வழிகாட்டல் மற்றும் வாடிக்கையாளர் ஆதரவு.",
+                why_2_title: "நேரில் சரிபார்க்கப்பட்டவை",
+                why_2_desc: "அனைத்து வீடுகள் மற்றும் கடைகளும் நேரில் சென்று ஆய்வு செய்யப்பட்டவை.",
+                why_3_title: "நேர்மையான நடைமுறை",
+                why_3_desc: "உரிமையாளர் - வாடகைதாரர் இருவருக்கும் பாதுகாப்பான ஒப்பந்த வழிகாட்டல்.",
+                yn_car: "கார் பார்க்கிங்",
+                yn_bike: "பைக் பார்க்கிங்",
+                yn_ev: "EV சார்ஜிங்",
+                yn_pets: "செல்லப்பிராணிகள்",
+                footer_brand_desc: "தமிழ்நாடு முழுவதும் வீடுகள், குடியிருப்புகள் மற்றும் வணிக வளாகங்களை வாடகை மற்றும் லீஸுக்கு எடுப்பதற்கான அதிகாரப்பூர்வ ரியல் எஸ்டேட் தளம்.",
+                footer_badge: "🟢 24/7 வாடிக்கையாளர் ஆதரவு",
+                footer_head_office: "📍 தலைமை அலுவலகம் (Head Office)",
+                footer_country: "தமிழ்நாடு, இந்தியா.",
+                footer_support_title: "📞 வாடிக்கையாளர் சேவை (24/7)",
+                footer_call_text: "நேரடி தொலைபேசி உதவி:",
+                footer_wa_text: "வாட்ஸ்அப் உதவி:",
+                footer_rights: "அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை."
+            },
+            en: {
+                topbar_left: "Premium Rentals & Lease Solutions • 24/7 Support",
+                topbar_right: "100% Verified Properties",
+                btn_upload: "+ Upload",
+                owner_banner_tag: "📢 Property Owners Attention!",
+                owner_banner_text: "List your House or Commercial Shop to get tenants quickly!",
+                owner_banner_btn: "Add Property",
+                hero_badge: "VERIFIED PROPERTIES",
+                hero_title: "Houses & Shops for Rent & Lease",
+                hero_desc: "Nominal fees, verified locations, complete advisory support.",
+                opt_all_districts: "📍 All Districts (38 Districts)",
+                area_placeholder: "Specific Locality / Area (e.g., Anna Nagar...)",
+                btn_search_txt: "Search",
+                f_all: "All",
+                f_rent: "Houses Rent",
+                f_lease: "Houses Lease",
+                f_shop_rent: "Shops Rent",
+                f_shop_lease: "Shops Lease",
+                listings_heading: "Available Properties",
+                tag_rent: "For Rent",
+                tag_lease: "For Lease",
+                whatsapp_cta: "WhatsApp",
+                view_details: "Details",
+                btn_call: "📞 Call",
+                float_call: "📞 24/7 Call",
+                float_wa: "WhatsApp 24/7",
+                photos_count: "📸 5 Photos",
+                tab_photos: "Photos",
+                tab_360: "360° View",
+                tab_video: "Video Tour",
+                spec_lbl_bhk: "Bedrooms (BHK)",
+                spec_lbl_sqft: "Area (Size)",
+                spec_lbl_bath: "Bathroom",
+                spec_lbl_floor: "Floor",
+                detail_h4: "Specifications:",
+                status_live: "Live / Vacant",
+                status_occupied: "Rented Out",
+                modal_title: "List / Upload Property",
+                modal_sub: "Submit details. Opens in WhatsApp.",
+                lbl_prop_type: "Property Category",
+                lbl_location: "District & Area",
+                lbl_amount: "Expected Amount",
+                lbl_specs_entry: "BHK, Bathrooms & Parking Specs",
+                lbl_details: "Additional Amenities & Video Link",
+                btn_submit_up: "Submit via WhatsApp",
+                pricing_title: "Transparent & Fair Brokerage Charges",
+                pricing_sub: "No hidden charges. Pay only after deal finalization.",
+                pricing_rent_title: "Houses & Commercial Shops (Rent)",
+                pricing_rent_rate: "Only 9.99% Brokerage Fee",
+                pricing_rent_eg: "E.g.: For ₹3,000 Rent 👉 Only ₹299 Fee!",
+                pricing_rent_sub: "Pay only after taking possession and keys.",
+                pricing_lease_title: "Residential & Shop Lease",
+                pricing_lease_rate: "Only 0.99% Brokerage Fee",
+                pricing_lease_eg: "E.g.: For ₹1,00,000 Lease 👉 Only ₹990 Fee!",
+                pricing_lease_sub: "Includes legal verification and agreement assistance.",
+                why_title: "Why Choose Tamil Nadu Rentals?",
+                why_1_title: "24/7 Live Assistance",
+                why_1_desc: "End-to-end guidance for rentals and lease contracts.",
+                why_2_title: "100% Verified Sites",
+                why_2_desc: "All houses and shops are personally inspected.",
+                why_3_title: "Fair & Transparent",
+                why_3_desc: "Secure legal agreement support for both parties.",
+                yn_car: "Car Parking",
+                yn_bike: "Bike Parking",
+                yn_ev: "EV Charging",
+                yn_pets: "Pets Allowed",
+                footer_brand_desc: "Official property platform for houses, apartments, and commercial shops for rent and lease across Tamil Nadu.",
+                footer_badge: "🟢 24/7 Customer Care Active",
+                footer_head_office: "📍 Head Office",
+                footer_country: "Tamil Nadu, India.",
+                footer_support_title: "📞 Customer Support (24/7)",
+                footer_call_text: "Direct Phone Support:",
+                footer_wa_text: "WhatsApp Support:",
+                footer_rights: "All rights reserved."
+            }
+        };
+
+        const featureDict = {
+            "கார் பார்க்கிங்": "Car Parking",
+            "பார்க்கிங்": "Car Parking",
+            "24/7 தண்ணீர்": "24/7 Water Supply",
+            "தண்ணீர் வசதி": "Water Facility",
+            "குடும்பம் மட்டும்": "Family Only",
+            "பேச்சிலர்": "Bachelors Allowed",
+            "லிப்ட் வசதி": "Lift Available",
+            "சிசிடிவி": "CCTV Surveillance"
+        };
+
+        function translateFeature(str) {
+            if (currentLang === 'ta') return str;
+            for (const [ta, en] of Object.entries(featureDict)) {
+                if (str.includes(ta)) return en;
+            }
+            return str;
+        }
+
+        function formatPrice(val, isEnglish) {
+            if (!val) return "";
+            if (isEnglish) {
+                return val.replace(/\/ மாதம்/g, "/ Month").replace(/மாதம்/g, "Month");
+            }
+            return val;
+        }
+
+        function loadSheetData() {
+            Papa.parse(GOOGLE_SHEET_CSV_URL, {
+                download: true,
+                header: true,
+                skipEmptyLines: true,
+                complete: function(results) {
+                    propertiesData = results.data
+                        .filter(row => row.id && (row.titleTa || row.titleEn))
+                        .map(row => ({
+                            id: row.id.trim(),
+                            category: (row.category || "rent").trim().toLowerCase(),
+                            searchTa: (row.locTa || "").toLowerCase(),
+                            searchEn: (row.locEn || "").toLowerCase(),
+                            titleTa: row.titleTa || "",
+                            titleEn: row.titleEn || row.titleTa || "",
+                            priceTa: row.priceTa || "",
+                            priceEn: row.priceEn ? formatPrice(row.priceEn, true) : (row.priceTa ? formatPrice(row.priceTa, true) : ""),
+                            advanceTa: row.advanceTa ? (row.advanceTa.includes('அட்வான்ஸ்') ? row.advanceTa : `அட்வான்ஸ்: ₹${row.advanceTa}`) : "",
+                            advanceEn: row.advanceEn ? (row.advanceEn.toLowerCase().includes('adv') ? row.advanceEn : `Adv: ₹${row.advanceEn}`) : (row.advanceTa ? `Adv: ₹${row.advanceTa}` : ""),
+                            locTa: row.locTa || "",
+                            locEn: row.locEn || row.locTa || "",
+                            bhk: row.bhk || "2 BHK",
+                            sqft: row.sqft || "900 sq.ft",
+                            bathrooms: row.bathrooms || "2 Western",
+                            floor: row.floor || "1st Floor",
+                            carParking: (row.carParking || "yes").trim().toLowerCase() === "no" ? "NO" : "YES",
+                            bikeParking: (row.bikeParking || "yes").trim().toLowerCase() === "no" ? "NO" : "YES",
+                            evCharging: (row.evCharging || "yes").trim().toLowerCase() === "no" ? "NO" : "YES",
+                            pets: (row.pets || "no").trim().toLowerCase() === "yes" ? "YES" : "NO",
+                            // Status handling: Available / Occupied
+                            status: (row.status || "available").trim().toLowerCase() === "occupied" ? "occupied" : "available",
+                            descTa: row.descTa || "",
+                            descEn: row.descEn || row.descTa || "",
+                            featuresTa: row.features ? row.features.split(',').map(f => f.trim()) : ["கார் பார்க்கிங்", "24/7 தண்ணீர்", "குடும்பம் மட்டும்"],
+                            featuresEn: row.features ? row.features.split(',').map(f => f.trim()) : ["Car Parking", "24/7 Water Supply", "Family Only"],
+                            photos: row.photos ? row.photos.split(',').map(p => p.trim()) : ["https://images.unsplash.com/photo-1600585154340-be6161a56a0c"],
+                            // Sample 360 link if blank
+                            image360: (row.image360 || "").trim() || "https://pannellum.org/images/alma.jpg",
+                            videoUrl: (row.videoUrl || "").trim()
+                        }));
+
+                    document.getElementById('loadingState').style.display = "none";
+                    document.getElementById('propertiesList').style.display = "grid";
+                    updateCountText();
+                    renderCards();
+                },
+                error: function() {
+                    document.getElementById('loadingState').innerText = "❌ தரவை ஏற்றுவதில் பிழை.";
+                }
+            });
+        }
+
+        function updateCountText(customCount = null) {
+            const count = customCount !== null ? customCount : propertiesData.length;
+            document.getElementById('propCount').innerText = currentLang === 'ta' ? `${count} சொத்துக்கள்` : `${count} Properties`;
+        }
+
+        function renderCards() {
+            const container = document.getElementById('propertiesList');
+            container.innerHTML = "";
+
+            if(propertiesData.length === 0) {
+                container.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 30px;">சொத்துக்கள் ஏதும் இல்லை.</div>`;
+                return;
+            }
+
+            propertiesData.forEach((item, index) => {
+                const title = currentLang === 'ta' ? item.titleTa : item.titleEn;
+                const price = currentLang === 'ta' ? item.priceTa : item.priceEn;
+                const advance = currentLang === 'ta' ? item.advanceTa : item.advanceEn;
+                const location = currentLang === 'ta' ? item.locTa : item.locEn;
+                const isRent = item.category === 'rent' || item.category === 'shop-rent';
+                const tagClass = isRent ? 'tag-rent' : 'tag-lease';
+                const tagText = isRent ? translations[currentLang].tag_rent : translations[currentLang].tag_lease;
+
+                const isLive = item.status === "available";
+                const statusBadgeHTML = isLive 
+                    ? `<span class="live-status-badge status-available"><span class="pulse-dot"></span>${translations[currentLang].status_live}</span>`
+                    : `<span class="live-status-badge status-occupied"><span class="pulse-dot-red"></span>${translations[currentLang].status_occupied}</span>`;
+
+                const card = document.createElement('div');
+                card.className = "card";
+                card.setAttribute('data-category', item.category);
+                card.setAttribute('data-search-ta', item.searchTa);
+                card.setAttribute('data-search-en', item.searchEn);
+
+                card.innerHTML = `
+                    <div class="card-img-wrapper" onclick="openDetailsModal(${index})">
+                        <img src="${item.photos[0]}" alt="${title}" onerror="this.src='https://images.unsplash.com/photo-1600585154340-be6161a56a0c'">
+                        <span class="tag-deal ${tagClass}">${tagText}</span>
+                        ${statusBadgeHTML}
+                        <span class="badge-pics">${translations[currentLang].photos_count}</span>
+                        <span class="badge-id">ID: ${item.id}</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="price-row" onclick="openDetailsModal(${index})">
+                            <div class="price">${price}</div>
+                            <div class="deposit">${advance}</div>
+                        </div>
+
+                        <div class="card-title" onclick="openDetailsModal(${index})">${title}</div>
+                        <div class="location" onclick="openDetailsModal(${index})">📍 ${location}</div>
+
+                        <div class="card-summary-pills" onclick="openDetailsModal(${index})">
+                            <span class="pill-badge">🛏️ ${item.bhk}</span>
+                            <span class="pill-badge">📐 ${item.sqft}</span>
+                        </div>
+
+                        <div class="action-row">
+                            <button class="view-btn" onclick="openDetailsModal(${index})">${translations[currentLang].view_details}</button>
+                            <a href="tel:+91${MY_PHONE_NUMBER}" class="btn-call-card">
+                                ${translations[currentLang].btn_call}
+                            </a>
+                            <button class="whatsapp-btn" onclick="sendInquiryByIndex(${index})">
+                                ${WA_SVG_ICON}
+                                <span>${translations[currentLang].whatsapp_cta}</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function applyFilters() {
+            const districtRaw = document.getElementById('districtSelect').value.toLowerCase().trim();
+            const area = document.getElementById('areaInput').value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.card');
+            let visibleCount = 0;
+
+            const districtKeywords = districtRaw ? districtRaw.split('|') : [];
+
+            cards.forEach(card => {
+                const searchTa = (card.getAttribute('data-search-ta') || "").toLowerCase();
+                const searchEn = (card.getAttribute('data-search-en') || "").toLowerCase();
+                const category = card.getAttribute('data-category') || "";
+
+                const matchesCat = (currentCategory === 'all' || category === currentCategory);
+
+                let matchesDistrict = true;
+                if (districtKeywords.length > 0) {
+                    matchesDistrict = districtKeywords.some(keyword => searchTa.includes(keyword) || searchEn.includes(keyword));
+                }
+
+                const matchesArea = !area || searchTa.includes(area) || searchEn.includes(area);
+
+                if (matchesCat && matchesDistrict && matchesArea) {
+                    card.style.display = "flex";
+                    visibleCount++;
+                } else {
+                    card.style.display = "none";
+                }
+            });
+
+            updateCountText(visibleCount);
+        }
+
+        function setCategoryFilter(category, btnElement) {
+            currentCategory = category;
+            document.querySelectorAll('.btn-filter').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+            applyFilters();
+        }
+
+        function sendInquiryByIndex(index) {
+            const item = propertiesData[index];
+            if (!item) return;
+            const title = currentLang === 'ta' ? item.titleTa : item.titleEn;
+            const price = currentLang === 'ta' ? item.priceTa : item.priceEn;
+            const location = currentLang === 'ta' ? item.locTa : item.locEn;
+
+            let message = currentLang === 'ta' 
+                ? `வணக்கம்! Tamil Nadu Rentals தளத்தில் இந்த சொத்தை பார்த்தேன்:\n- ID: ${item.id}\n- விவரம்: ${title} (${item.bhk})\n- குளியலறை: ${item.bathrooms}\n- பார்க்கிங்: கார் ${item.carParking} | பைக் ${item.bikeParking} | EV சார்ஜிங் ${item.evCharging}\n- நிலை: ${item.status === 'available' ? 'காலியாக உள்ளது' : 'வாடகைக்கு விடப்பட்டது'}\n- தொகை: ${price}\n- இடம்: ${location}\nநேரில் பேச விரும்புகிறேன்.`
+                : `Hello! Interested in this property from Tamil Nadu Rentals:\n- ID: ${item.id}\n- Title: ${title} (${item.bhk})\n- Baths: ${item.bathrooms}\n- Parking: Car ${item.carParking} | Bike ${item.bikeParking} | EV Point ${item.evCharging}\n- Status: ${item.status === 'available' ? 'Live / Vacant' : 'Rented Out'}\n- Price: ${price}\n- Location: ${location}\nWould like to discuss further.`;
+
+            window.open(`https://wa.me/${MY_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, '_blank');
+        }
+
+        function openDetailsModal(index) {
+            activeProperty = propertiesData[index];
+            const item = activeProperty;
+            const title = currentLang === 'ta' ? item.titleTa : item.titleEn;
+            const price = currentLang === 'ta' ? item.priceTa : item.priceEn;
+            const location = currentLang === 'ta' ? item.locTa : item.locEn;
+            const desc = currentLang === 'ta' ? item.descTa : item.descEn;
+            const rawFeatures = currentLang === 'ta' ? item.featuresTa : item.featuresEn;
+            const features = rawFeatures.map(f => translateFeature(f));
+
+            // Set media tabs visibility
+            document.getElementById('tab360Btn').style.display = item.image360 ? "inline-block" : "none";
+            document.getElementById('tabVideoBtn').style.display = item.videoUrl ? "inline-block" : "none";
+
+            // Status Badge inside Modal
+            const isLive = item.status === "available";
+            document.getElementById('modalStatusBadge').innerHTML = isLive
+                ? `<span class="live-status-badge status-available" style="position:static;"><span class="pulse-dot"></span>${translations[currentLang].status_live}</span>`
+                : `<span class="live-status-badge status-occupied" style="position:static;"><span class="pulse-dot-red"></span>${translations[currentLang].status_occupied}</span>`;
+
+            // Populate Gallery Thumbs
+            const thumbsContainer = document.getElementById('detailThumbs');
+            thumbsContainer.innerHTML = "";
+            item.photos.forEach((photo, pIdx) => {
+                const img = document.createElement('img');
+                img.src = photo;
+                img.onerror = function(){ this.src = 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c'; };
+                if (pIdx === 0) img.classList.add('active-thumb');
+                img.onclick = function() {
+                    switchMediaTab('photos');
+                    document.getElementById('detailMainImg').src = photo;
+                    document.querySelectorAll('.gallery-thumbs img').forEach(t => t.classList.remove('active-thumb'));
+                    img.classList.add('active-thumb');
+                };
+                thumbsContainer.appendChild(img);
+            });
+
+            // Default to Photos tab
+            switchMediaTab('photos');
+            document.getElementById('detailMainImg').src = item.photos[0];
+
+            document.getElementById('detailTitle').innerText = `${item.id}: ${title}`;
+            document.getElementById('detailPrice').innerText = price;
+            document.getElementById('detailLocation').innerText = location;
+            document.getElementById('detailFullText').innerText = desc;
+
+            document.getElementById('specBHK').innerText = item.bhk;
+            document.getElementById('specSqft').innerText = item.sqft;
+            document.getElementById('specBath').innerText = item.bathrooms;
+            document.getElementById('specFloor').innerText = item.floor;
+
+            const setBadge = (elementId, value) => {
+                const el = document.getElementById(elementId);
+                const isYes = value.toUpperCase() === "YES";
+                el.innerText = isYes ? "YES" : "NO";
+                el.className = `yn-badge ${isYes ? 'yn-yes' : 'yn-no'}`;
+            };
+
+            setBadge('badgeCar', item.carParking);
+            setBadge('badgeBike', item.bikeParking);
+            setBadge('badgeEV', item.evCharging);
+            setBadge('badgePets', item.pets);
+
+            const featContainer = document.getElementById('detailFeatures');
+            featContainer.innerHTML = features.map(f => `<span style="display:inline-block; background:#e2e8f0; padding:2px 7px; border-radius:4px; font-size:0.75rem; margin-right:4px; margin-bottom:4px;">✓ ${f}</span>`).join('');
+
+            document.getElementById('detailWhatsAppBtn').onclick = function() { 
+                sendInquiryByIndex(index); 
+            };
+
+            document.getElementById('detailsModal').style.display = 'flex';
+        }
+
+        function switchMediaTab(tab) {
+            const imgEl = document.getElementById('detailMainImg');
+            const panoEl = document.getElementById('panorama360Viewer');
+            const videoEl = document.getElementById('videoPlayerContainer');
+            const thumbsEl = document.getElementById('detailThumbs');
+
+            document.querySelectorAll('.media-tab-btn').forEach(btn => btn.classList.remove('active'));
+
+            if (tab === 'photos') {
+                document.getElementById('tabPhotosBtn').classList.add('active');
+                imgEl.style.display = 'block';
+                panoEl.style.display = 'none';
+                videoEl.style.display = 'none';
+                videoEl.innerHTML = '';
+                thumbsEl.style.display = 'flex';
+            } else if (tab === '360') {
+                document.getElementById('tab360Btn').classList.add('active');
+                imgEl.style.display = 'none';
+                panoEl.style.display = 'block';
+                videoEl.style.display = 'none';
+                videoEl.innerHTML = '';
+                thumbsEl.style.display = 'none';
+
+                if (activeProperty && activeProperty.image360) {
+                    panoEl.innerHTML = '';
+                    pannellumViewerInstance = pannellum.viewer('panorama360Viewer', {
+                        type: 'equirectangular',
+                        panorama: activeProperty.image360,
+                        autoLoad: true,
+                        compass: false,
+                        showZoomCtrl: true
+                    });
+                }
+            } else if (tab === 'video') {
+                document.getElementById('tabVideoBtn').classList.add('active');
+                imgEl.style.display = 'none';
+                panoEl.style.display = 'none';
+                videoEl.style.display = 'block';
+                thumbsEl.style.display = 'none';
+
+                if (activeProperty && activeProperty.videoUrl) {
+                    let embedUrl = activeProperty.videoUrl;
+                    if (embedUrl.includes('youtube.com/watch?v=')) {
+                        embedUrl = embedUrl.replace('watch?v=', 'embed/');
+                    } else if (embedUrl.includes('youtu.be/')) {
+                        embedUrl = embedUrl.replace('youtu.be/', 'youtube.com/embed/');
+                    }
+
+                    if (embedUrl.includes('youtube.com')) {
+                        videoEl.innerHTML = `<iframe src="${embedUrl}?autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+                    } else {
+                        videoEl.innerHTML = `<video src="${embedUrl}" controls autoplay style="width:100%; height:100%;"></video>`;
+                    }
+                }
+            }
+        }
+
+        function closeDetailsModal() { 
+            document.getElementById('detailsModal').style.display = 'none';
+            document.getElementById('videoPlayerContainer').innerHTML = '';
+            document.getElementById('panorama360Viewer').innerHTML = '';
+        }
+
+        function openUploadModal() { document.getElementById('uploadModal').style.display = 'flex'; }
+        function closeUploadModal() { document.getElementById('uploadModal').style.display = 'none'; }
+
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('detailsModal')) closeDetailsModal();
+            if (event.target == document.getElementById('uploadModal')) closeUploadModal();
+        };
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'ta' ? 'en' : 'ta';
+            document.getElementById('langBtnText').innerText = currentLang === 'ta' ? 'EN' : 'தமிழ்';
+            
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[currentLang][key]) {
+                    el.innerText = translations[currentLang][key];
+                }
+            });
+
+            document.getElementById('areaInput').placeholder = translations[currentLang].area_placeholder;
+            renderCards();
+            applyFilters();
+
+            // Refresh modal if currently opened
+            if (activeProperty && document.getElementById('detailsModal').style.display === 'flex') {
+                const idx = propertiesData.findIndex(p => p.id === activeProperty.id);
+                if (idx !== -1) openDetailsModal(idx);
+            }
+        }
+
+        function handleUploadSubmit(e) {
+            e.preventDefault();
+            const pType = document.getElementById('upPropType').value;
+            const pLoc = document.getElementById('upLocation').value;
+            const pAmt = document.getElementById('upAmount').value;
+            const pSpecs = document.getElementById('upSpecs').value;
+            const pDet = document.getElementById('upDetails').value;
+
+            const uploadMsg = `வணக்கம்! சொத்து விவரம்:\n- வகை: ${pType}\n- இடம்: ${pLoc}\n- தொகை: ${pAmt}\n- அளவு/குளியலறை/பார்க்கிங்/EV: ${pSpecs}\n- கூடுதல் விவரம் & வீடியோ: ${pDet}`;
+            window.open(`https://wa.me/${MY_WHATSAPP_NUMBER}?text=${encodeURIComponent(uploadMsg)}`, '_blank');
+            closeUploadModal();
+        }
+
+        loadSheetData();
+    </script>
+</body>
+</html>
+
