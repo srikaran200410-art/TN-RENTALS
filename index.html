@@ -15,7 +15,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pannellum/2.5.6/pannellum.css"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pannellum/2.5.6/pannellum.js"></script>
     <style>
-        :root {
+     /* ரூபாய் குறியீடு மற்றும் எண்கள் ஒட்டிக்கொள்வதைத் தடுக்கும் ஸ்டைல் */
+  .price, .advance-price, [class*="price"], [class*="rent"], [class*="advance"] {
+    white-space: nowrap !important;
+    letter-spacing: 0.8px !important;
+    display: inline-block !important;
+    word-spacing: 2px !important;
+  }
+  :root {
             --primary: #0a1128;
             --brand: #1c3d5a;
             --accent: #c5a059;
